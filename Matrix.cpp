@@ -18,7 +18,7 @@ namespace MI
 
     }
 
-    Matrix Matrix::inverted_gauss_jordan()
+    Matrix Matrix::inverted_gauss_jordan() const
     {
         Matrix A(*this);
         Matrix I = Matrix::Identity(matrix.size());
@@ -106,18 +106,7 @@ namespace MI
 
     Matrix Matrix::Random(std::size_t n)
     {
-        std::srand(std::time(0));
-
-        Matrix A(n);
-        for (int i = 0; i < n; ++i)
-        {
-            for (int j = 0; j < n; ++j)
-            {
-                A[i][j] =rand()% 200 - 100;
-            }
-        }
-
-        return A;
+        return Random(n, n);
     }
 
     Matrix::Matrix(std::initializer_list<std::initializer_list<double>> list)
@@ -130,7 +119,188 @@ namespace MI
 
     Matrix Matrix::inverted_blockwise()
     {
-        return Matrix(std::initializer_list<initializer_list < double>>
-        ());
+        if(matrix.size() == 1)
+        {
+            return { { 1/matrix[0][0] } };
+        }
+
+        Matrix A = blockA();
+        Matrix B = blockB();
+        Matrix C = blockC();
+        Matrix D = blockD();
+
+        Matrix A1 = A.inverted_blockwise();
+        Matrix F = (D - C*A1*B).inverted_blockwise();
+        A = A1 + A1*B*F*C*A1;
+        B = A1*B*F*(-1);
+        C = F*C*A1*(-1);
+        D = F;
+
+        Matrix I(A.rows() + D.rows(), A.cols() + D.cols());
+
+        for (int i = 0; i < I.rows(); ++i)
+        {
+            for (int j = 0; j < I.cols(); ++j)
+            {
+                if(i < A.rows() && j < A.cols())
+                {
+                    I[i][j] = A[i][j];
+                }
+                else if(i < A.rows())
+                {
+                    I[i][j] = B[i][j - A.cols()];
+                }
+                else if(j < A.cols())
+                {
+                    I[i][j] = C[i - A.rows()][j];
+                }
+                else
+                {
+                    I[i][j] = D[i - A.rows()][j - A.cols()];
+                }
+
+            }
+        }
+
+        return I;
+    }
+
+    Matrix Matrix::blockA()
+    {
+        Matrix A(matrix.size()/2);
+        for (int i = 0; i < matrix.size()/2; ++i)
+        {
+            for (int j = 0; j < matrix.size()/2; ++j)
+            {
+                A[i][j] = matrix[i][j];
+            }
+        }
+        return A;
+    }
+
+    Matrix Matrix::blockB()
+    {
+        int n = matrix.size()/2;
+        int m = matrix.size() - (matrix.size()/2);
+        Matrix B(n, m);
+        for (int i = 0; i < n; ++i)
+        {
+            for (int j = 0; j < m; ++j)
+            {
+                B[i][j] = matrix[i][j + n];
+            }
+        }
+        return B;
+    }
+
+    Matrix Matrix::blockC()
+    {
+        int n = matrix.size() - (matrix.size()/2);
+        int m = matrix.size()/2;
+
+        Matrix C(n, m);
+
+        for (int i = 0; i < n; ++i)
+        {
+            for (int j = 0; j < m; ++j)
+            {
+                C[i][j] = matrix[i + m][j];
+            }
+        }
+        return C;
+    }
+
+    Matrix Matrix::blockD()
+    {
+        int n = matrix.size()/2;
+        int m = matrix.size() - (matrix.size()/2);
+
+        Matrix D(m);
+
+        for (int i = 0; i < n; ++i)
+        {
+            for (int j = 0; j < m; ++j)
+            {
+                D[i][j] = matrix[i + n][j + n];
+            }
+        }
+
+        return D;
+    }
+
+    std::size_t Matrix::rows() const
+    {
+        return matrix.size();
+    }
+
+    std::size_t Matrix::cols() const
+    {
+        return matrix[0].size();
+    }
+
+    const std::vector<double> &Matrix::operator[](std::size_t i) const
+    {
+        return matrix[i];
+    }
+
+    Matrix Matrix::Random(std::size_t n, std::size_t m)
+    {
+        std::srand(std::time(0));
+
+        Matrix A(n, m);
+        for (int i = 0; i < n; ++i)
+        {
+            for (int j = 0; j < m; ++j)
+            {
+                A[i][j] = rand() % 200 - 100;
+            }
+        }
+
+        return A;
+    }
+
+    Matrix operator+ (const Matrix &A, const Matrix &B)
+    {
+        Matrix C(A.rows(), A.cols());
+
+        for (int i = 0; i < C.cols(); ++i)
+        {
+            for (int j = 0; j < C.rows(); ++j)
+            {
+                C[i][j] = A[i][j] + B[i][j];
+            }
+        }
+        return C;
+    }
+
+    Matrix operator- (const Matrix &A, const Matrix &B)
+    {
+        Matrix C(A.rows(), A.cols());
+
+        for (int i = 0; i < C.cols(); ++i)
+        {
+            for (int j = 0; j < C.rows(); ++j)
+            {
+                C[i][j] = A[i][j] - B[i][j];
+            }
+        }
+        return C;
+    }
+
+    Matrix operator* (const Matrix &A, const Matrix &B)
+    {
+        Matrix C(A.rows(), B.cols());
+
+        for (int i = 0; i < C.cols(); ++i)
+        {
+            for (int j = 0; j < C.rows(); ++j)
+            {
+                for (int k = 0; k < A.cols(); ++k)
+                {
+                    C[i][j] += A[i][k] * B[k][j];
+                }
+            }
+        }
+        return C;
     }
 }
