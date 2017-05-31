@@ -11,28 +11,29 @@ namespace MI
     {
     public:
         Matrix(std::initializer_list<std::initializer_list<double>> list);
-        Matrix(std::size_t n);
+        explicit Matrix(std::size_t n);
         Matrix(std::size_t n, std::size_t m);
         Matrix(const Matrix &copy);
+        Matrix & operator= (const Matrix &copy);
 
         static Matrix Identity(std::size_t n);
         static Matrix Random(std:: size_t n);
         static Matrix Random(std:: size_t n, std::size_t m);
+        static void print(Matrix A, std::size_t n);
 
         std::vector<double> & operator[] (std::size_t i);
         const std::vector<double> & operator[] (std::size_t i) const;
 
         Matrix inverted_gauss_jordan() const;
-        Matrix inverted_blockwise();
+        Matrix inverted_blockwise() const;
 
-        Matrix blockA();
-        Matrix blockB();
-        Matrix blockC();
-        Matrix blockD();
+        Matrix blockA() const;
+        Matrix blockB() const;
+        Matrix blockC() const;
+        Matrix blockD() const;
 
         std::size_t rows() const;
         std::size_t cols() const;
-
 
     private:
         std::vector<std::vector<double>> matrix;
@@ -41,6 +42,7 @@ namespace MI
     Matrix operator+ (const Matrix &A, const Matrix &B);
     Matrix operator- (const Matrix &A, const Matrix &B);
     Matrix operator* (const Matrix &A, const Matrix &B);
+    Matrix operator- (const Matrix &A);
 }
 
 

@@ -117,7 +117,7 @@ namespace MI
         }
     }
 
-    Matrix Matrix::inverted_blockwise()
+    Matrix Matrix::inverted_blockwise() const
     {
         if(matrix.size() == 1)
         {
@@ -129,11 +129,12 @@ namespace MI
         Matrix C = blockC();
         Matrix D = blockD();
 
-        Matrix A1 = A.inverted_blockwise();
-        Matrix F = (D - C*A1*B).inverted_blockwise();
+        Matrix A1 = A.inverted_gauss_jordan() ;
+        Matrix F1 = D - C*A1*B;
+        Matrix F = F1.inverted_gauss_jordan();
         A = A1 + A1*B*F*C*A1;
-        B = A1*B*F*(-1);
-        C = F*C*A1*(-1);
+        B = -A1*B*F;
+        C = -F*C*A1;
         D = F;
 
         Matrix I(A.rows() + D.rows(), A.cols() + D.cols());
@@ -165,7 +166,7 @@ namespace MI
         return I;
     }
 
-    Matrix Matrix::blockA()
+    Matrix Matrix::blockA() const
     {
         Matrix A(matrix.size()/2);
         for (int i = 0; i < matrix.size()/2; ++i)
@@ -178,7 +179,7 @@ namespace MI
         return A;
     }
 
-    Matrix Matrix::blockB()
+    Matrix Matrix::blockB() const
     {
         int n = matrix.size()/2;
         int m = matrix.size() - (matrix.size()/2);
@@ -193,7 +194,7 @@ namespace MI
         return B;
     }
 
-    Matrix Matrix::blockC()
+    Matrix Matrix::blockC() const
     {
         int n = matrix.size() - (matrix.size()/2);
         int m = matrix.size()/2;
@@ -210,7 +211,7 @@ namespace MI
         return C;
     }
 
-    Matrix Matrix::blockD()
+    Matrix Matrix::blockD() const
     {
         int n = matrix.size()/2;
         int m = matrix.size() - (matrix.size()/2);
@@ -259,6 +260,24 @@ namespace MI
         return A;
     }
 
+    Matrix &Matrix::operator=(const Matrix &copy)
+    {
+        matrix = copy.matrix;
+        return *this;
+    }
+
+    void Matrix::print(Matrix A, std::size_t n)
+    {
+        for (int i = 0; i < n; ++i)
+        {
+            for (int j = 0; j < n; ++j)
+            {
+                std::cout << std::fixed << std::setw(15) << std::setprecision(4) << A[i][j];
+            }
+            std::cout << std::endl;
+        }
+    }
+
     Matrix operator+ (const Matrix &A, const Matrix &B)
     {
         Matrix C(A.rows(), A.cols());
@@ -302,5 +321,10 @@ namespace MI
             }
         }
         return C;
+    }
+
+    Matrix operator-(const Matrix &A)
+    {
+        return Matrix(A.rows(), A.cols()) - A;
     }
 }
