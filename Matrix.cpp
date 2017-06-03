@@ -129,9 +129,10 @@ namespace MI
         Matrix C = blockC();
         Matrix D = blockD();
 
-        Matrix A1 = A.inverted_gauss_jordan() ;
+        Matrix A1 = A.inverted_blockwise();
         Matrix F1 = D - C*A1*B;
-        Matrix F = F1.inverted_gauss_jordan();
+        Matrix F = F1.inverted_blockwise();
+
         A = A1 + A1*B*F*C*A1;
         B = -A1*B*F;
         C = -F*C*A1;
@@ -168,10 +169,11 @@ namespace MI
 
     Matrix Matrix::blockA() const
     {
-        Matrix A((matrix.size() + 1) / 2);
-        for (int i = 0; i < matrix.size()/2; ++i)
+        int n = (matrix.size() + 1) / 2;
+        Matrix A(n);
+        for (int i = 0; i < n; ++i)
         {
-            for (int j = 0; j < matrix.size()/2; ++j)
+            for (int j = 0; j < n; ++j)
             {
                 A[i][j] = matrix[i][j];
             }
@@ -196,8 +198,8 @@ namespace MI
 
     Matrix Matrix::blockC() const
     {
-        int n = (matrix.size() + 1) / 2;
-        int m = matrix.size() / 2;
+        int n = matrix.size() / 2;
+        int m = (matrix.size() + 1) / 2;
 
         Matrix C(n, m);
 
@@ -298,9 +300,9 @@ namespace MI
     {
         Matrix C(A.rows(), B.cols());
 
-        for (int i = 0; i < C.cols(); ++i)
+        for (int i = 0; i < C.rows(); ++i)
         {
-            for (int j = 0; j < C.rows(); ++j)
+            for (int j = 0; j < C.cols(); ++j)
             {
                 for (int k = 0; k < A.cols(); ++k)
                 {
@@ -323,7 +325,7 @@ namespace MI
         {
             for (int j = 0; j < A.cols(); ++j)
             {
-                std::cout << std::fixed << std::setw(15) << std::setprecision(4) << A[i][j];
+                std::cout << std::setw(15) << std::setprecision(4) << A[i][j];
             }
             std::cout << std::endl;
         }
