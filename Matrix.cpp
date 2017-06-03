@@ -168,7 +168,7 @@ namespace MI
 
     Matrix Matrix::blockA() const
     {
-        Matrix A(matrix.size()/2);
+        Matrix A((matrix.size() + 1) / 2);
         for (int i = 0; i < matrix.size()/2; ++i)
         {
             for (int j = 0; j < matrix.size()/2; ++j)
@@ -181,8 +181,8 @@ namespace MI
 
     Matrix Matrix::blockB() const
     {
-        int n = matrix.size()/2;
-        int m = matrix.size() - (matrix.size()/2);
+        int n = (matrix.size() + 1) / 2;
+        int m = matrix.size() / 2;
         Matrix B(n, m);
         for (int i = 0; i < n; ++i)
         {
@@ -196,8 +196,8 @@ namespace MI
 
     Matrix Matrix::blockC() const
     {
-        int n = matrix.size() - (matrix.size()/2);
-        int m = matrix.size()/2;
+        int n = (matrix.size() + 1) / 2;
+        int m = matrix.size() / 2;
 
         Matrix C(n, m);
 
@@ -213,12 +213,12 @@ namespace MI
 
     Matrix Matrix::blockD() const
     {
-        int n = matrix.size()/2;
-        int m = matrix.size() - (matrix.size()/2);
+        int n = (matrix.size() + 1) / 2;
+        int m = matrix.size()/2;
 
         Matrix D(m);
 
-        for (int i = 0; i < n; ++i)
+        for (int i = 0; i < m; ++i)
         {
             for (int j = 0; j < m; ++j)
             {
@@ -264,18 +264,6 @@ namespace MI
     {
         matrix = copy.matrix;
         return *this;
-    }
-
-    void Matrix::print(Matrix A, std::size_t n)
-    {
-        for (int i = 0; i < n; ++i)
-        {
-            for (int j = 0; j < n; ++j)
-            {
-                std::cout << std::fixed << std::setw(15) << std::setprecision(4) << A[i][j];
-            }
-            std::cout << std::endl;
-        }
     }
 
     Matrix operator+ (const Matrix &A, const Matrix &B)
@@ -326,5 +314,19 @@ namespace MI
     Matrix operator-(const Matrix &A)
     {
         return Matrix(A.rows(), A.cols()) - A;
+    }
+
+
+    std::ostream & operator<< (std::ostream &stream, const Matrix &A)
+    {
+        for (int i = 0; i < A.rows(); ++i)
+        {
+            for (int j = 0; j < A.cols(); ++j)
+            {
+                std::cout << std::fixed << std::setw(15) << std::setprecision(4) << A[i][j];
+            }
+            std::cout << std::endl;
+        }
+        return stream;
     }
 }

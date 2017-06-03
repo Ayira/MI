@@ -9,11 +9,10 @@ const int N = 3;
 int main()
 {
     MI::Matrix A = MI::Matrix::Random(N);
-    //MI::Matrix B = A.inverted_gauss_jordan();
-    MI::Matrix C = A.inverted_blockwise();
-   // MI::Matrix::print(B, N);
-    std::cout<<std::endl;
-    MI::Matrix::print(C, N);
+
+    std::cout << A << std::endl;
+    auto D = A.blockD();
+    std::cout << D << std::endl;
 
     return 0;
 }

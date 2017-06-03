@@ -4,6 +4,7 @@
 
 #include <cstddef>
 #include <vector>
+#include <iostream>
 
 namespace MI
 {
@@ -19,7 +20,6 @@ namespace MI
         static Matrix Identity(std::size_t n);
         static Matrix Random(std:: size_t n);
         static Matrix Random(std:: size_t n, std::size_t m);
-        static void print(Matrix A, std::size_t n);
 
         std::vector<double> & operator[] (std::size_t i);
         const std::vector<double> & operator[] (std::size_t i) const;
@@ -43,6 +43,8 @@ namespace MI
     Matrix operator- (const Matrix &A, const Matrix &B);
     Matrix operator* (const Matrix &A, const Matrix &B);
     Matrix operator- (const Matrix &A);
+
+    std::ostream & operator<< (std::ostream &stream, const Matrix &A);
 }
 
 
