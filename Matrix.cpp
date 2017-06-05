@@ -268,6 +268,23 @@ namespace MI
         return *this;
     }
 
+    double **Matrix::c_array() const
+    {
+        double ** array = new double * [rows()];
+
+        for (int i = 0; i < rows(); ++i)
+        {
+            array[i] = new double [cols()];
+
+            for (int j = 0; j < cols(); ++j)
+            {
+                array[i][j] = matrix[i][j];
+            }
+        }
+
+        return array;
+    }
+
     Matrix operator+ (const Matrix &A, const Matrix &B)
     {
         Matrix C(A.rows(), A.cols());

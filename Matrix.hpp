@@ -35,6 +35,8 @@ namespace MI
         std::size_t rows() const;
         std::size_t cols() const;
 
+        double ** c_array() const;
+
     private:
         std::vector<std::vector<double>> matrix;
     };
